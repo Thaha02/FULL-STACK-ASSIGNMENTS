@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Form</title>
+    <style>
+    body{
+font-family: Arial;
+background-color: antiquewhite;
+padding:20px;
+}
+input{
+display:block;
+margin-bottom:10px;
+padding:8px;
+width:250px;}
+button{
+padding:8px 15px;}
+.error{
+color:red;
+font-size:14px;} 
+#successMessage{
+color:green;
+font-weight:bold; }
+</style>
+</head>
+<body>
+    <h2>Registration Form</h2>
+<form id="myForm">
+<label>Name:</label>
+<input type="text" id="name">
+<p id="nameError" class="error"></p>
+<label>Email:</label>
+<input type="text" id="email">
+<p id="emailError" class="error"></p>
+<label>Password:</label>
+<input type="password" id="password">
+<p id="passwordError" class="error"></p>
+<button type="submit">Submit</button>
+<p id="successMessage"></p>
+</form>
+
+<script>
+    document.getElementById("myForm").addEventListener("submit", function(e){
+e.preventDefault();
+let name = document.getElementById("name").value;
+let email = document.getElementById("email").value;
+let password = document.getElementById("password").value;
+let valid = true;
+document.getElementById("nameError").innerText = "";
+document.getElementById("emailError").innerText = "";
+document.getElementById("passwordError").innerText = "";
+document.getElementById("successMessage").innerText = "";
+if(name === ""){
+document.getElementById("nameError").innerText = "Name is required";
+valid = false;}
+if(email === ""){
+document.getElementById("emailError").innerText = "Email is required";
+valid = false;}
+if(password.length < 6){
+document.getElementById("passwordError").innerText = "Password must be at least 6 characters";
+valid = false;}
+if(valid){
+document.getElementById("successMessage").innerText = "Form submitted successfully!";} });
+
+
+
+
+</script>
+</body>
+</html>
+

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Manager</title>
+</head>
+<body>
+<h2>Student Manager</h2>
+<style>
+    body{
+        background-color: pink;
+        font-size: x-large;
+        font-family: cursive;
+        text-align: center;    
+    }
+</style>
+<div id="output"></div>
+
+<script>
+let students = [
+    { name: "Rohit", marks: [80, 75, 90] },
+    { name: "Aisha", marks: [85, 70, 88] },
+    { name: "Sharma", marks: [60, 65, 70] }
+];
+
+let result = "";
+
+for (let i = 0; i < students.length; i++) {
+
+    let marks = students[i].marks;
+    let sum = 0;
+
+    for (let j = 0; j < marks.length; j++) {
+        sum = sum + marks[j];
+            }
+
+    let average = sum / marks.length;
+
+        result += "Name: " + students[i].name + "<br>";
+        result += "Average: " + average + "<br>";
+        result += "--------------------<br>";
+
+}
+
+document.getElementById("output").innerHTML = result;
+
+</script>
+
+</body>
+</html>
