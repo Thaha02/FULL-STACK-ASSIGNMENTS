@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Folder Architect Advanced</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #d4e5ac, #e28cca);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: rgb(238, 239, 235);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+            width: 300px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #d4edbf;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            border: none;
+            border-radius: 8px;
+            background: #eaa5ba;
+            color: rgb(176, 213, 250);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #0c0c0c;
+        }
+
+        .output {
+            margin-top: 15px;
+            color: #282727;
+            font-weight: bold;
+            white-space: pre-line;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Folder Architect</h1>
+
+        <input type="text" id="name" placeholder="Enter Name">
+        <input type="text" id="phone" placeholder="Enter Phone">
+
+        <br>
+
+        <button onclick="saveData()">Save Data</button>
+        <button onclick="getData()">Retrieve Data</button>
+        <button onclick="clearData()">Clear</button>
+
+        <div class="output" id="result"></div>
+    </div>
+
+    <script>
+        function saveData() {
+            let name = document.getElementById("name").value.trim();
+            let phone = document.getElementById("phone").value.trim();
+
+            if(name === "" || phone === "") {
+                alert("Please fill all fields!");
+                return;
+            }
+
+            // Phone validation
+            if(phone.length !== 10 || isNaN(phone)) {
+                alert("Enter valid 10-digit phone number");
+                return;
+            }
+
+            let user = {
+                name: name,
+                phone: phone
+            };
+
+            localStorage.setItem("userData", JSON.stringify(user));
+
+            document.getElementById("result").innerText = "✅ Data Saved Successfully!";
+
+            // Clear inputs
+            document.getElementById("name").value = "";
+            document.getElementById("phone").value = "";
+        }
+
+        function getData() {
+            let data = localStorage.getItem("userData");
+
+            if(data) {
+                let user = JSON.parse(data);
+                document.getElementById("result").innerText =
+                    `Name: ${user.name}\nPhone: ${user.phone}`;
+            } else {
+                document.getElementById("result").innerText = "❌ No Data Found!";
+            }
+        }
+
+        function clearData() {
+            localStorage.removeItem("userData");
+            document.getElementById("result").innerText = "🧹 Data Cleared!";
+        }
+    </script>
+
+</body>
+</html>

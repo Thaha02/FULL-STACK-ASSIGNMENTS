@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Product Listing UI</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: #f5f5f5;
+}
+
+header {
+    background: #333;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 24px;
+    position: relative;
+}
+
+.cart {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+}
+
+.filters {
+    text-align: center;
+    margin: 20px;
+}
+
+select, input, button {
+    padding: 8px;
+    margin: 5px;
+}
+
+.products {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+}
+
+.card img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.price {
+    color: green;
+    font-weight: bold;
+}
+
+.rating {
+    color: orange;
+}
+
+button {
+    border: none;
+    background: #ff5722;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #e64a19;
+}
+
+.reset-btn {
+    background: #2196f3;
+}
+
+.reset-btn:hover {
+    background: #1976d2;
+}
+
+.no-data {
+    text-align: center;
+    font-size: 20px;
+    color: gray;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    Mini E-Commerce
+    <span class="cart">🛒 Cart: <span id="cartCount">0</span></span>
+</header>
+
+<div class="filters">
+    <input type="text" id="search" placeholder="Search product..." onkeyup="filterProducts()">
+
+    <select id="category" onchange="filterProducts()">
+        <option value="all">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="accessories">Accessories</option>
+    </select>
+
+    <select id="price" onchange="filterProducts()">
+        <option value="all">All Prices</option>
+        <option value="low">Below ₹1000</option>
+        <option value="high">Above ₹1000</option>
+    </select>
+
+    <select id="sort" onchange="filterProducts()">
+        <option value="default">Sort By</option>
+        <option value="lowHigh">Price Low → High</option>
+        <option value="highLow">Price High → Low</option>
+    </select>
+
+    <button class="reset-btn" onclick="resetFilters()">🏠 Home</button>
+</div>
+
+<div class="products" id="productList"></div>
+
+<script>
+let cart = 0;
+
+const products = [
+    {
+        name: "iPhone 14",
+        price: 70000,
+        category: "electronics",
+        rating: 5,
+        img: "https://images.unsplash.com/photo-1663499482823-0b7bce6c47a5"
+    },
+    {
+        name: "Samsung Phone",
+        price: 15000,
+        category: "electronics",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9"
+    },
+    {
+        name: "Headphones",
+        price: 1200,
+        category: "accessories",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1580894908361-967195033215"
+    },
+    {
+        name: "Laptop",
+        price: 55000,
+        category: "electronics",
+        rating: 5,
+        img: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8"
+    },
+    {
+        name: "T-Shirt",
+        price: 400,
+        category: "clothing",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab"
+    },
+    {
+        name: "Kurti",
+        price: 800,
+        category: "clothing",
+        rating: 5,
+        img: "https://images.unsplash.com/photo-1618354691373-d851c5c3a990"
+    },
+    {
+        name: "Jeans",
+        price: 1200,
+        category: "clothing",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1542272604-787c3835535d"
+    },
+    {
+        name: "Shoes",
+        price: 2000,
+        category: "clothing",
+        rating: 5,
+        img: "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+    },
+    {
+        name: "Watch",
+        price: 2500,
+        category: "accessories",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1519741497674-611481863552"
+    },
+    {
+        name: "Backpack",
+        price: 900,
+        category: "accessories",
+        rating: 4,
+        img: "https://images.unsplash.com/photo-1509762774605-f07235a08f1f"
+    }
+];
+
+function displayProducts(list) {
+    let output = "";
+
+    if (list.length === 0) {
+        output = `<p class="no-data">No products found 😢</p>`;
+    } else {
+        list.forEach(p => {
+            output += `
+                <div class="card">
+                    <img src="${p.img}">
+                    <h3>${p.name}</h3>
+                    <p class="price">₹${p.price}</p>
+                    <p class="rating">⭐ ${p.rating}</p>
+                    <button onclick="addToCart()">Add to Cart</button>
+                </div>
+            `;
+        });
+    }
+
+    document.getElementById("productList").innerHTML = output;
+}
+
+function filterProducts() {
+    let search = document.getElementById("search").value.toLowerCase();
+    let category = document.getElementById("category").value;
+    let price = document.getElementById("price").value;
+    let sort = document.getElementById("sort").value;
+
+    let filtered = products.filter(p => {
+        return (
+            p.name.toLowerCase().includes(search) &&
+            (category === "all" || p.category === category) &&
+            (price === "all" ||
+                (price === "low" && p.price < 1000) ||
+                (price === "high" && p.price >= 1000))
+        );
+    });
+
+    if (sort === "lowHigh") filtered.sort((a, b) => a.price - b.price);
+    if (sort === "highLow") filtered.sort((a, b) => b.price - a.price);
+
+    displayProducts(filtered);
+}
+
+function resetFilters() {
+    document.getElementById("search").value = "";
+    document.getElementById("category").value = "all";
+    document.getElementById("price").value = "all";
+    document.getElementById("sort").value = "default";
+
+    displayProducts(products);
+}
+
+function addToCart() {
+    cart++;
+    document.getElementById("cartCount").innerText = cart;
+}
+
+displayProducts(products);
+</script>
+
+</body>
+</html>

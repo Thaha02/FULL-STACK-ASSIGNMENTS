@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Multi Page JS App</title>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+margin-top:50px;
+background-color: azure;
+}
+
+nav button{
+margin:10px;
+padding:10px;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>My Website</h1>
+
+<nav>
+<button onclick="showPage('home')">Home</button>
+<button onclick="showPage('about')">About</button>
+<button onclick="showPage('contact')">Contact</button>
+</nav>
+
+<div id="content"></div>
+
+<script>
+
+function showPage(page){
+
+const content = document.getElementById("content");
+
+if(page === "home"){
+content.innerHTML = `
+<h2>Home Page</h2>
+<p>Welcome to the Home page</p>
+`;
+}
+
+else if(page === "about"){
+content.innerHTML = `
+<h2>About Page</h2>
+<p>This is a Multi Page App using JavaScript</p>
+`;
+}
+
+else if(page === "contact"){
+content.innerHTML = `
+<h2>Contact Page</h2>
+<p>Email: example@gmail.com</p>
+`;
+}
+
+}
+
+// default page
+showPage("home");
+
+</script>
+
+</body>
+</html>
