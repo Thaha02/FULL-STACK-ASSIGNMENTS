@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Blog Data Modeler (Single File)</title>
+<style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    h1, h2 { color: #333; }
+    input, textarea {
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 300px;
+    }
+    button { padding: 8px 12px; cursor: pointer; }
+    .post {
+    background: white;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>📝 Blogging Platform (Data Modeler)</h1>
+
+<!-- VIEW -->
+<h2>Create Post</h2>
+<input type="text" id="title" placeholder="Title">
+<textarea id="content" placeholder="Content"></textarea>
+<input type="text" id="author" placeholder="Author">
+<button onclick="Controller.addPost()">Add Post</button>
+
+<h2>All Posts</h2>
+<div id="postList"></div>
+
+<script>
+
+const mongoose = require("mongoose");
+
+const userSchema = new mongoose.Schema({
+name: String,
+email: String
+});
+
+const commentSchema = new mongoose.Schema({
+text: String,
+author: String,
+createdAt: { type: Date, default: Date.now }
+});
+
+const postSchema = new mongoose.Schema({
+title: String,
+content: String,
+author: userSchema,
+comments: [commentSchema],
+createdAt: { type: Date, default: Date.now }
+});
+
+module.exports = mongoose.model("Post", postSchema);
+
+
+
+const Model = {
+posts: JSON.parse(localStorage.getItem("posts")) || [],
+
+save() {
+    localStorage.setItem("posts", JSON.stringify(this.posts));
+},
+
+addPost(post) {
+    post.id = Date.now();
+    post.comments = [];
+    post.createdAt = new Date().toLocaleString();
+    this.posts.push(post);
+    this.save();
+},
+
+getPosts() {
+    return this.posts;
+}
+};
+
+
+const Controller = {
+addPost() {
+    const title = document.getElementById("title").value.trim();
+    const content = document.getElementById("content").value.trim();
+    const author = document.getElementById("author").value.trim();
+
+    if (!title || !content || !author) {
+    alert("All fields required!");
+    return;
+    }
+
+    Model.addPost({ title, content, author });
+
+    document.getElementById("title").value = "";
+    document.getElementById("content").value = "";
+    document.getElementById("author").value = "";
+
+    View.render();
+}
+
+};
+
+/* =========================
+VIEW
+========================= */
+const View = {
+render() {
+    const container = document.getElementById("postList");
+    container.innerHTML = "";
+
+    Model.getPosts().forEach(post => {
+    const div = document.createElement("div");
+    div.className = "post";
+
+    div.innerHTML = `
+        <h3>${post.title}</h3>
+        <p>${post.content}</p>
+        <small><b>Author:</b> ${post.author}</small><br>
+        <small><b>Created:</b> ${post.createdAt}</small>
+    `;
+
+container.appendChild(div);
+    });
+}
+};
+
+// Initial render
+View.render();
+</script>
+
+</body>
+</html>
