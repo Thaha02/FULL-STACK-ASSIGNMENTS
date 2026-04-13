@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Connect the Stack - One File</title>
+
+<!-- React -->
+<script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+<!-- Babel -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<style>
+    body {
+    font-family: Arial;
+    text-align: center;
+    background: #f4f4f4;
+    }
+    .box {
+    background: white;
+    padding: 20px;
+    margin: 20px auto;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #ccc;
+    }
+    input, button {
+    padding: 8px;
+margin: 5px;
+    }
+</style>
+</head>
+<body>
+
+<h1>🚀 Connect the Stack (All in One)</h1>
+<div id="root"></div>
+
+<script type="text/babel">
+
+/* ==============================
+🔹 SIMULATED BACKEND API
+============================== */
+
+let database = [
+{ id: 1, name: "Alice" },
+{ id: 2, name: "Bob" }
+];
+
+// Save original fetch
+const realFetch = window.fetch;
+
+// Override fetch to act like backend
+window.fetch = (url, options = {}) => {
+return new Promise((resolve) => {
+    setTimeout(() => {
+
+      // GET /api/users
+    if (url === "/api/users" && (!options.method || options.method === "GET")) {
+        resolve({
+        json: () => Promise.resolve(database)
+        });
+    }
+
+      // POST /api/users
+    else if (url === "/api/users" && options.method === "POST") {
+        const body = JSON.parse(options.body);
+
+        const newUser = {
+        id: database.length + 1,
+        name: body.name
+        };
+
+        database.push(newUser);
+
+        resolve({
+json: () => Promise.resolve(newUser)
+        });
+}
+
+    }, 500); // simulate delay
+});
+};
+
+
+/* ==============================
+🔹 REACT FRONTEND
+============================== */
+
+function App() {
+const [users, setUsers] = React.useState([]);
+const [name, setName] = React.useState("");
+const [loading, setLoading] = React.useState(false);
+
+const API = "/api/users";
+
+  // GET users
+const getUsers = async () => {
+    setLoading(true);
+    const res = await fetch(API);
+    const data = await res.json();
+    setUsers(data);
+    setLoading(false);
+};
+
+  // POST user
+const addUser = async () => {
+    if (!name) return alert("Enter name");
+
+    setLoading(true);
+
+    await fetch(API, {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ name })
+    });
+
+    setName("");
+    getUsers();
+};
+
+React.useEffect(() => {
+    getUsers();
+}, []);
+
+return (
+    <div className="box">
+    <h2>👥 User List</h2>
+
+    <input
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Enter name"
+    />
+    <br />
+    <button onClick={addUser}>Add User</button>
+
+    {loading && <p>Loading...</p>}
+
+    <ul>
+        {users.map(user => (
+        <li key={user.id}>✅ {user.name}</li>
+        ))}
+    </ul>
+    </div>
+);
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+
+</script>
+
+</body>
+</html>
